@@ -34,6 +34,15 @@ async function run() {
 
     const classesCollection = client.db("musicallyDb").collection("classes");
     const instructorsCollection = client.db("musicallyDb").collection("instructors");
+    const usersCollection = client.db("musicallyDb").collection("users");
+
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+    
+      const result = await usersCollection.insertOne(user);
+      console.log(result);
+      res.send(result);})
 
 
     app.get('/classes', async (req, res) => {
