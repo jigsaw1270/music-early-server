@@ -53,6 +53,7 @@ async function run() {
     const instructorsCollection = client.db("musicallyDb").collection("instructors");
     const usersCollection = client.db("musicallyDb").collection("users");
     const cartCollection = client.db("musicallyDb").collection("carts");
+    const newinsCollection = client.db("musicallyDb").collection("newins");
 
     // jwt
     app.post('/jwt', (req, res) => {
@@ -174,8 +175,46 @@ async function run() {
         const result = await classesCollection.find().toArray();
         res.send(result);
       });
+//instructors
+app.post('/newins', async (req, res) => {
+  const item = req.body;
+  const result = await newinsCollection.insertOne(item);
+  res.send(result);
+})
 
+app.put('/newins/:id', async(req, res) =>{
+  const id = req.params.id;
+  const user = req.body;
+  console.log(id, user);
+  
+  const filter = {_id: new ObjectId(id)}
+  const options = {upsert: true}
+  const updatedUser = {
+      $set: {
+          status : 'approved'
+      }
+  }
 
+  const result = await newinsCollection.updateOne(filter, updatedUser, options );
+  res.send(result);
+
+})
+
+app.delete('/newins/:id', async(req, res) =>{
+  const id = req.params.id;
+  console.log('please delete from database', id);
+  const query = { _id: new ObjectId(id)}
+  
+  const result = await newinsCollection.deleteOne(query);
+  res.send(result);
+})
+
+    app.get('/newins', async (req, res) => {
+        const result = await newinsCollection.find().toArray();
+        res.send(result);
+      });
+
+      
     app.get('/instructors', async (req, res) => {
         const result = await instructorsCollection.find().toArray();
         res.send(result);
