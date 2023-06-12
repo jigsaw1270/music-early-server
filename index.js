@@ -170,6 +170,15 @@ async function run() {
 
     })
 
+    app.delete('/users/:id', async(req, res) =>{
+      const id = req.params.id;
+      console.log('please delete from database', id);
+      const query = { _id: new ObjectId(id)}
+      
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+  })
+
 
     app.get('/classes', async (req, res) => {
         const result = await classesCollection.find().toArray();
@@ -202,10 +211,14 @@ app.put('/newins/:id', async(req, res) =>{
 
 app.delete('/newins/:id', async(req, res) =>{
   const id = req.params.id;
+
   console.log('please delete from database', id);
   const query = { _id: new ObjectId(id)}
+
+
   
   const result = await newinsCollection.deleteOne(query);
+
   res.send(result);
 })
 
@@ -239,6 +252,12 @@ app.delete('/newins/:id', async(req, res) =>{
         const result = await cartCollection.find(query).toArray();
         res.send(result);
       });
+
+      app.post('/insturctors', async (req, res) => {
+        const item = req.body;
+        const result = await instructorsCollection.insertOne(item);
+        res.send(result);
+      })
   
       app.post('/carts', async (req, res) => {
         const item = req.body;
