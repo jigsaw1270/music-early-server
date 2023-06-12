@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')('sk_test_51NI9ldAIkNuJhZZgg0XFJZOYSTo4YdErcafrPD7rZjeZyyfOEFHKmT30p84cGkwZPShRdCbT09RDsyccHDNxN6C700Vc1fvrBi')
 const port = process.env.PORT || 5000;
 require('dotenv').config()
 
@@ -54,6 +55,7 @@ async function run() {
     const usersCollection = client.db("musicallyDb").collection("users");
     const cartCollection = client.db("musicallyDb").collection("carts");
     const newinsCollection = client.db("musicallyDb").collection("newins");
+    const paymentCollection = client.db("musicallyDb").collection("payments");
 
     // jwt
     app.post('/jwt', (req, res) => {
@@ -269,6 +271,27 @@ app.delete('/newins/:id', async(req, res) =>{
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await cartCollection.deleteOne(query);
+        res.send(result);
+      })
+
+      // create payment intent
+      app.post('/create-payment-intent',verifyJWT, async(req, res)=>{
+        const {price} = req.body;
+        const amount = price*100;
+      
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amount,
+          currency : 'usd',
+          payment_method_types : ['card']
+        })
+        res.send({
+          clientSecret : paymentIntent.client_secret
+        })
+      })
+
+      app.post('/payments',async(req,res)=>{
+        const payment = req.body;
+        const result = await paymentCollection.insertOne(payment);
         res.send(result);
       })
 
