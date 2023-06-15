@@ -229,6 +229,8 @@ app.delete('/newins/:id', async(req, res) =>{
         res.send(result);
       });
 
+
+
       
     app.get('/instructors', async (req, res) => {
         const result = await instructorsCollection.find().toArray();
@@ -294,6 +296,11 @@ app.delete('/newins/:id', async(req, res) =>{
         const result = await paymentCollection.insertOne(payment);
         res.send(result);
       })
+
+      app.get('/payments', async (req, res) => {
+        const result = await paymentCollection.find().toArray();
+        res.send(result);
+      });
 
 
     // Send a ping to confirm a successful connection
